@@ -5,6 +5,16 @@ resources:
     endpoint: Innoactive
     name: Innoactive/Creator
     ref: develop
+  - repository: BehaviorsAndConditions
+    type: github
+    endpoint: Innoactive
+    name: Innoactive/Basic-Conditions-And-Behaviors
+    ref: develop
+  - repository: TextToSpeech
+    type: github
+    endpoint: Innoactive
+    name: Innoactive/TextToSpeech-Component
+    ref: develop
   - repository: UnityProject
     type: github
     endpoint: Innoactive
@@ -65,6 +75,10 @@ stages:
           - checkout: UnityProject
             lfs: true
           - checkout: Creator
+            lfs: true
+          - checkout: BehaviorsAndConditions
+            lfs: true
+          - checkout: TextToSpeech
             lfs: true
           - checkout: self
             lfs: true
