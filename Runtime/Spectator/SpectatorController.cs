@@ -39,8 +39,9 @@ namespace Innoactive.Creator.UX
         {
 #if ENABLE_LEGACY_INPUT_MANAGER
             return Input.GetKeyDown(key);
-#endif
+#else
             return false;
+#endif
         }
     }
 }
