@@ -1,6 +1,7 @@
 ﻿using System;
-using Innoactive.Creator.Core.Utils;
+using System.Linq;
 using UnityEngine;
+using Innoactive.Creator.Core.Utils;
 
 namespace Innoactive.Creator.UX
 {
@@ -9,8 +10,6 @@ namespace Innoactive.Creator.UX
     /// </summary>
     public class CourseControllerSetup : MonoBehaviour
     {
-        private GameObject courseController;
-        
 #pragma warning disable 0649
         [SerializeField, SerializeReference]
         private string courseControllerQualifiedName;
@@ -35,12 +34,32 @@ namespace Innoactive.Creator.UX
             }
             else
             {
-                Type courseControllerType = ReflectionUtils.GetTypeFromAssemblyQualifiedName(courseControllerQualifiedName);
+                Type courseControllerType = RetrieveCourseControllerType();
+                
                 if (ReflectionUtils.CreateInstanceOfType(courseControllerType) is ICourseController controller)
                 {
-                    courseController = Instantiate(controller.GetCourseControllerPrefab());
+                    Instantiate(controller.GetCourseControllerPrefab());
                 }
             }
+        }
+
+        private Type RetrieveCourseControllerType()
+        {
+            if (string.IsNullOrEmpty(courseControllerQualifiedName))
+            {
+                return RetrieveDefaultControllerType();
+            }
+            
+            Type courseControllerType = ReflectionUtils.GetTypeFromAssemblyQualifiedName(courseControllerQualifiedName);
+            return courseControllerType != null ? courseControllerType : RetrieveDefaultControllerType();
+        }
+
+        private Type RetrieveDefaultControllerType()
+        {
+            return ReflectionUtils.GetFinalImplementationsOf<ICourseController>()
+                .Select(c => (ICourseController) ReflectionUtils.CreateInstanceOfType(c)).OrderByDescending(controller => controller.Priority)
+                .First()
+                .GetType();
         }
     }
 }
