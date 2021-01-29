@@ -104,9 +104,6 @@ namespace Innoactive.Creator.UX
 
         private void Awake()
         {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-            Debug.LogError("The legacy input system is disabled and this course controller won't work properly. Go to 'Edit/Project Settings.../Player/Other Settings' and set 'Active Input Handling' to 'Both'");
-#endif
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
 
