@@ -68,7 +68,7 @@ namespace Innoactive.Creator.UX
             transform.SetPositionAndRotation(position, rotation);
             dropdownsList.AddRange(GetComponentsInChildren<TMP_Dropdown>());
             
-#if ENABLE_INPUT_SYSTEM
+#if ENABLE_INPUT_SYSTEM && XRIT_0_10_OR_NEWER
             UnityEngine.InputSystem.UI.InputSystemUIInputModule inputSystem = FindObjectOfType<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
             if (inputSystem)
