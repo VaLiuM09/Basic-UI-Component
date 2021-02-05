@@ -2,7 +2,7 @@
 
 namespace Innoactive.CreatorEditor.UI
 {
-    internal class SpectatorSettingsProvider : BaseSettingsProvider
+    public class SpectatorSettingsProvider : BaseSettingsProvider
     {
         const string Path = "Project/Creator/Spectator";
 
