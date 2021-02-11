@@ -177,12 +177,18 @@ namespace Innoactive.Creator.UX
         private void SubscribeToControllerEvents()
         {
             spectatorController = FindObjectOfType<SpectatorController>();
-            spectatorController.ToggleUIOverlayVisibility += ToggleUIVisibility;
+            if (spectatorController != null)
+            {
+                spectatorController.ToggleUIOverlayVisibility += ToggleUIVisibility;
+            }
         }
         
         private void UnsubscribeFromControllerEvents()
         {
-            spectatorController.ToggleUIOverlayVisibility -= ToggleUIVisibility;
+            if (spectatorController != null)
+            {
+                spectatorController.ToggleUIOverlayVisibility -= ToggleUIVisibility;
+            }
         }
 
         private void ToggleUIVisibility(object sender, EventArgs args)
