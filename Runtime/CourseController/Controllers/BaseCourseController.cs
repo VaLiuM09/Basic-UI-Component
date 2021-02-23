@@ -23,6 +23,10 @@ namespace Innoactive.Creator.UX
         /// <inheritdoc />
         public virtual GameObject GetCourseControllerPrefab()
         {
+            if (PrefabName == null)
+            {
+                return null;
+            }
             return Resources.Load<GameObject>($"Prefabs/{PrefabName}");
         }
 
@@ -30,6 +34,12 @@ namespace Innoactive.Creator.UX
         public virtual List<Type> GetRequiredSetupComponents() 
         {
             return new List<Type>();
+        }
+
+        /// <inheritdoc />
+        public virtual void HandlePostSetup(GameObject courseControllerObject)
+        {
+            // do nothing
         }
     }
 }

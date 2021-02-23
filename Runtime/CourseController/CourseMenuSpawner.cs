@@ -1,0 +1,54 @@
+﻿using UnityEngine;
+
+namespace Innoactive.Creator.UX
+{
+    /// <summary>
+    /// Spawns a course menu in the scene.
+    /// </summary>
+    public class CourseMenuSpawner : MonoBehaviour
+    {
+        [SerializeField]
+        private GameObject defaultPrefab;
+        
+        [SerializeField] 
+        private bool useCustomPrefab;
+        
+        [SerializeField]
+        private GameObject customPrefab;
+
+        private void Start()
+        {
+            Init();
+        }
+
+        private void Init()
+        {
+            GameObject prefab;
+            if (useCustomPrefab)
+            {
+                if (customPrefab == null)
+                {
+                    Debug.LogError("Custom prefab in CourseMenuSpawner is not set.");
+                    return;
+                }
+
+                prefab = customPrefab;
+            }
+            else
+            {
+                prefab = defaultPrefab;
+            }
+
+            Instantiate(prefab);
+        }
+
+        /// <summary>
+        /// Overrides the default prefab.
+        /// </summary>
+        /// <param name="prefab">New default prefab.</param>
+        public void SetDefaultPrefab(GameObject prefab)
+        {
+            defaultPrefab = prefab;
+        }
+    }
+}

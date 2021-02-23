@@ -102,7 +102,12 @@ namespace Innoactive.Creator.UX
 
         private SpectatorController spectatorController;
 
-        private void Awake()
+        protected virtual void Awake()
+        {
+            SetupMenu();
+        }
+
+        protected virtual void SetupMenu()
         {
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
@@ -141,8 +146,8 @@ namespace Innoactive.Creator.UX
             SetupLanguagePicker();
             SetupModePicker();
             
-            // Load the training and localize it to the selected language.
-            SetupTraining();
+            // Load the localization for the current selected course.
+            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
             
             // Update the UI.
             SetupTrainingDependantUI();
@@ -151,12 +156,12 @@ namespace Innoactive.Creator.UX
             SubscribeToControllerEvents();
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             UnsubscribeFromControllerEvents();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             IChapter currentChapter = CourseRunner.Current == null ? null : CourseRunner.Current.Data.Current;
             IStep currentStep = currentChapter?.Data.Current;
@@ -230,9 +235,6 @@ namespace Innoactive.Creator.UX
         {
             // Load training course from a file.
             string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
-            
-            // Load the localization file of the current selected language.
-            LoadLocalizationForTraining(coursePath);
             
             // Try to load the in the [TRAINING_CONFIGURATION] selected training course.
             try
@@ -486,6 +488,7 @@ namespace Innoactive.Creator.UX
                 RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
                 // Load the training and localize it to the selected language.
                 SetupTraining();
+                LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
                 // Update the UI.
                 SetupTrainingDependantUI();
             });

@@ -3,7 +3,7 @@
     /// <summary>
     /// Course controller for standalone devices like the Oculus Quest.
     /// </summary>
-    public class StandaloneCourseController : BaseCourseController
+    public class StandaloneCourseController : UIBaseCourseController
     {
         /// <inheritdoc />
         public override string Name { get; } = "Standalone";
@@ -13,5 +13,8 @@
         
         /// <inheritdoc />
         protected override string PrefabName { get; } = "StandaloneCourseController";
+        
+        /// <inheritdoc />
+        public override string CourseMenuPrefabName { get; } = "StandaloneCourseControllerMenu";
     }
 }

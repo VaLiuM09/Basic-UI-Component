@@ -6,7 +6,7 @@ namespace Innoactive.Creator.UX
     /// <summary>
     /// Default course controller.
     /// </summary>
-    public class DefaultCourseController : BaseCourseController
+    public class DefaultCourseController : UIBaseCourseController
     {
         /// <inheritdoc />
         public override string Name { get; } = "Default";
@@ -18,9 +18,14 @@ namespace Innoactive.Creator.UX
         public override int Priority { get; } = 50;
 
         /// <inheritdoc />
+        public override string CourseMenuPrefabName { get; } = "CourseControllerMenu";
+
+        /// <inheritdoc />
         public override List<Type> GetRequiredSetupComponents()
         {
-            return new List<Type> { typeof(SpectatorController) };
+            List<Type> requiredSetupComponents = base.GetRequiredSetupComponents();
+            requiredSetupComponents.Add(typeof(SpectatorController));
+            return requiredSetupComponents;
         }
     }
 }

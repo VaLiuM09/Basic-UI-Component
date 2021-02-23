@@ -136,8 +136,8 @@ namespace Innoactive.Creator.UX
             SetupLanguagePicker();
             SetupModePicker();
             
-            // Load the training and localize it to the selected language.
-            SetupTraining();
+            // Load the localization for the current selected course.
+            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
             
             // Update the UI.
             SetupTrainingDependantUI();
