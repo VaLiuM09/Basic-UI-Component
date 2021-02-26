@@ -9,10 +9,10 @@ namespace Innoactive.Creator.UX
     {
         [SerializeField]
         private GameObject defaultPrefab;
-        
-        [SerializeField] 
+
+        [SerializeField]
         private bool useCustomPrefab;
-        
+
         [SerializeField]
         private GameObject customPrefab;
 
@@ -28,7 +28,7 @@ namespace Innoactive.Creator.UX
             {
                 if (customPrefab == null)
                 {
-                    Debug.LogError("Custom prefab in CourseMenuSpawner is not set.");
+                    Debug.LogWarning("Custom prefab in CourseMenuSpawner is not set. No trainer menu will be spawned.");
                     return;
                 }
 

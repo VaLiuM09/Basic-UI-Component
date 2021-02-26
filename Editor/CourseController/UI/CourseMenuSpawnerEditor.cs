@@ -31,19 +31,19 @@ namespace Innoactive.CreatorEditor.UX
             GUI.enabled = false;
             EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour((CourseMenuSpawner)target), typeof(CourseMenuSpawner), false);
             EditorGUILayout.ObjectField(new GUIContent("Default prefab", "Default menu prefab. If you want to change the menu that is spawned, set a custom prefab instead."), defaultPrefabProperty.objectReferenceValue, typeof(GameObject), false);
-            
+
             GUI.enabled = useCustomPrefab == false && Application.isPlaying == false;
-            
+
             GUI.enabled = !Application.isPlaying;
 
             useCustomPrefab = EditorGUILayout.Toggle(new GUIContent("Use custom prefab", "Use a custom menu prefab instead of default"), useCustomPrefabProperty.boolValue);
-            
+
             if (useCustomPrefab)
             {
-                customPrefab = EditorGUILayout.ObjectField(new GUIContent("Custom prefab", "Custom menu prefab"), customPrefabProperty.objectReferenceValue, typeof(GameObject), false) as GameObject;
+                customPrefab = EditorGUILayout.ObjectField(new GUIContent("Custom prefab", "Custom menu prefab. If you leave this empty no menu will be spawned."), customPrefabProperty.objectReferenceValue, typeof(GameObject), false) as GameObject;
                 customPrefabProperty.objectReferenceValue = customPrefab;
             }
-            
+
             useCustomPrefabProperty.boolValue = useCustomPrefab;
             serializedObject.ApplyModifiedProperties();
         }
