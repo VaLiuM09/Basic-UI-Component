@@ -25,7 +25,7 @@ namespace Innoactive.Creator.UX
         [Tooltip("Menu panel.")]
         [SerializeField]
         private RectTransform menuPanel = null;
-        
+
         [Tooltip("Chapter picker dropdown.")]
         [SerializeField]
         private Dropdown chapterPicker = null;
@@ -65,7 +65,7 @@ namespace Innoactive.Creator.UX
         [Tooltip("Toggle that turns training audio on or off.")]
         [SerializeField]
         private Toggle soundToggle = null;
-        
+
         [Tooltip("Image that shows the sound icon.")]
         [SerializeField]
         private Image soundImage = null;
@@ -102,14 +102,19 @@ namespace Innoactive.Creator.UX
 
         private SpectatorController spectatorController;
 
-        private void Awake()
+        protected virtual void Awake()
+        {
+            SetupMenu();
+        }
+
+        protected virtual void SetupMenu()
         {
             // Get the current system language as default language.
             selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
 
             // Check if the fallback language is a valid language.
             fallbackLanguage = fallbackLanguage.Trim();
-            
+
             if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out string validFallbackLanguage))
             {
                 fallbackLanguage = validFallbackLanguage;
@@ -127,10 +132,10 @@ namespace Innoactive.Creator.UX
             {
                 selectedLanguage = ttsConfiguration.Language;
             }
-            
+
             // Get all the available localization files for the selected training.
             localizationFileNames = FetchAvailableLocalizationsForTraining();
-            
+
             // Setup UI controls.
             SetupChapterPicker();
             SetupStepInfoToggle();
@@ -140,10 +145,10 @@ namespace Innoactive.Creator.UX
             SetupSoundToggle();
             SetupLanguagePicker();
             SetupModePicker();
-            
-            // Load the training and localize it to the selected language.
-            SetupTraining();
-            
+
+            // Load the localization for the current selected course.
+            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
+
             // Update the UI.
             SetupTrainingDependantUI();
 
@@ -151,12 +156,12 @@ namespace Innoactive.Creator.UX
             SubscribeToControllerEvents();
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             UnsubscribeFromControllerEvents();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             IChapter currentChapter = CourseRunner.Current == null ? null : CourseRunner.Current.Data.Current;
             IStep currentStep = currentChapter?.Data.Current;
@@ -173,16 +178,22 @@ namespace Innoactive.Creator.UX
                 UpdateDisplayedStep(currentStep);
             }
         }
-        
+
         private void SubscribeToControllerEvents()
         {
             spectatorController = FindObjectOfType<SpectatorController>();
-            spectatorController.ToggleUIOverlayVisibility += ToggleUIVisibility;
+            if (spectatorController != null)
+            {
+                spectatorController.ToggleUIOverlayVisibility += ToggleUIVisibility;
+            }
         }
-        
+
         private void UnsubscribeFromControllerEvents()
         {
-            spectatorController.ToggleUIOverlayVisibility -= ToggleUIVisibility;
+            if (spectatorController != null)
+            {
+                spectatorController.ToggleUIOverlayVisibility -= ToggleUIVisibility;
+            }
         }
 
         private void ToggleUIVisibility(object sender, EventArgs args)
@@ -224,10 +235,7 @@ namespace Innoactive.Creator.UX
         {
             // Load training course from a file.
             string coursePath = RuntimeConfigurator.Instance.GetSelectedCourse();
-            
-            // Load the localization file of the current selected language.
-            LoadLocalizationForTraining(coursePath);
-            
+
             // Try to load the in the [TRAINING_CONFIGURATION] selected training course.
             try
             {
@@ -238,7 +246,7 @@ namespace Innoactive.Creator.UX
                 Debug.LogError($"{exception.GetType().Name}, {exception.Message}\n{exception.StackTrace}", RuntimeConfigurator.Instance.gameObject);
                 return;
             }
-            
+
             // Initializes the training course. That will synthesize an audio for the training instructions, too.
             CourseRunner.Initialize(trainingCourse);
         }
@@ -275,7 +283,7 @@ namespace Innoactive.Creator.UX
         private void LoadLocalizationForTraining(string coursePath)
         {
             string courseName = Path.GetFileNameWithoutExtension(coursePath);
-            
+
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
 
@@ -339,7 +347,7 @@ namespace Innoactive.Creator.UX
                     stepInfoText.enabled = false;
                     return;
                 }
-                
+
                 // Show or hide description of the step.
                 stepInfoBackground.enabled = newValue;
                 stepInfoText.enabled = newValue;
@@ -356,7 +364,7 @@ namespace Innoactive.Creator.UX
                     Debug.LogError("No training course is selected.", RuntimeConfigurator.Instance.gameObject);
                     return;
                 }
-                
+
                 // Subscribe to the "stage changed" event of the current training in order to change the skip step button to the start button after finishing the training.
                 CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
                 {
@@ -372,7 +380,7 @@ namespace Innoactive.Creator.UX
 
                 // Start the training
                 CourseRunner.Run();
-                
+
                 // Show the skip step button instead of the start button.
                 skipStepPicker.gameObject.SetActive(true);
                 startTrainingButton.gameObject.SetActive(false);
@@ -386,12 +394,12 @@ namespace Innoactive.Creator.UX
 
         private void SetupSkipStepPicker()
         {
-            // Dropdown.onValueChanged won't be call if Dropdown.value is equal to the selected value. 
+            // Dropdown.onValueChanged won't be call if Dropdown.value is equal to the selected value.
             // Dropdown.value can't be less than 0 or grater than Dropdown.options.Count -1.
             // This causes the dropdown to never call onValueChanged in cases when there is only 1 transition.
             // By setting the value to be out of range from the "editor" instead than from Dropdown.value we ensure that Dropdown.onValueChanged is always called.
             skipStepPickerEditorValueField = skipStepPicker.GetType().GetField("m_Value", BindingFlags.NonPublic | BindingFlags.Instance);
-            
+
             // When a target step was chosen,
             skipStepPicker.onValueChanged.AddListener(index =>
             {
@@ -472,6 +480,7 @@ namespace Innoactive.Creator.UX
                 }
             }
 
+
             // When the selected language is changed, setup a training from scratch.
             languagePicker.onValueChanged.AddListener(itemIndex =>
             {
@@ -479,11 +488,12 @@ namespace Innoactive.Creator.UX
                 selectedLanguage = supportedLanguages[itemIndex];
                 RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
                 // Load the training and localize it to the selected language.
+                LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
                 SetupTraining();
                 // Update the UI.
                 SetupTrainingDependantUI();
             });
-            
+
             // If there is only one option, the dropdown is currently disabled.
             SetDropDownStatus(languagePicker);
         }
@@ -498,16 +508,16 @@ namespace Innoactive.Creator.UX
             {
                 availableModes.Add(mode.Name);
             }
-            
+
             // Setup the dropdown menu.
             modePicker.AddOptions(availableModes);
-            
+
             // Set the picker value to the current selected mode.
             modePicker.value = RuntimeConfigurator.Configuration.Modes.CurrentModeIndex;
-            
+
             // If there is only one option, the dropdown is currently disabled.
             SetDropDownStatus(modePicker);
-            
+
             // When the selected mode is changed,
             modePicker.onValueChanged.AddListener(itemIndex =>
             {
@@ -539,7 +549,7 @@ namespace Innoactive.Creator.UX
             {
                 // Skip finished chapters and convert the rest to a list of chapter names.
                 List<string> dropdownOptions = new List<string>();
-                
+
                 for (int i = startingIndex; i < chapters.Count; i++)
                 {
                     dropdownOptions.Add(chapters[i].Data.Name);
@@ -547,13 +557,13 @@ namespace Innoactive.Creator.UX
 
                 // Reset the chapter picker.
                 chapterPicker.ClearOptions();
-                
+
                 // Populate it with new options.
                 chapterPicker.AddOptions(dropdownOptions);
-                
+
                 // Reset the selected value
                 chapterPicker.value = 0;
-                
+
                 // If there is only one option, the dropdown is currently disabled.
                 SetDropDownStatus(chapterPicker);
             }
@@ -593,7 +603,7 @@ namespace Innoactive.Creator.UX
             {
                 return;
             }
-            
+
             CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
             {
                 if (args.Stage == Stage.Activating)
@@ -609,7 +619,7 @@ namespace Innoactive.Creator.UX
                 }
             };
         }
-        
+
         private void SetDropDownStatus(Dropdown dropdown)
         {
             if (dropdown.options.Count <= 1)

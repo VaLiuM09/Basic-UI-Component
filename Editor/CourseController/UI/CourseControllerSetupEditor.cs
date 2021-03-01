@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Utils;
 using Innoactive.Creator.UX;
 using UnityEditor;
@@ -37,12 +38,12 @@ namespace Innoactive.CreatorEditor.UX
 
             customPrefab = (GameObject) customPrefabProperty.objectReferenceValue;
             setupObject = (CourseControllerSetup) serializedObject.targetObject;
-            
+
             availableCourseControllers = ReflectionUtils.GetFinalImplementationsOf<ICourseController>()
                 .Select(c => (ICourseController) ReflectionUtils.CreateInstanceOfType(c)).OrderByDescending(controller => controller.Priority).ToArray();
 
             availableCourseControllerNames = availableCourseControllers.Select(controller => controller.Name).ToArray();
-            
+
             selectedIndex = availableCourseControllers.Select(controller => controller.GetType().AssemblyQualifiedName).ToList().IndexOf(courseControllerProperty.stringValue);
             if (selectedIndex < 0)
             {
@@ -54,6 +55,8 @@ namespace Innoactive.CreatorEditor.UX
 
         public override void OnInspectorGUI()
         {
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField("Script", MonoScript.FromMonoBehaviour((CourseControllerSetup)target), typeof(CourseControllerSetup), false);
             GUI.enabled = useCustomPrefab == false && Application.isPlaying == false;
             bool prevUseCustomPrefab = useCustomPrefab;
             int prevIndex = selectedIndex;
@@ -63,6 +66,17 @@ namespace Innoactive.CreatorEditor.UX
             GUI.enabled = !Application.isPlaying;
 
             useCustomPrefab = EditorGUILayout.Toggle("Use custom prefab", useCustomPrefabProperty.boolValue);
+
+            if (Application.isPlaying)
+            {
+                if (useCustomPrefab)
+                {
+                    customPrefab = EditorGUILayout.ObjectField("Custom prefab", customPrefab, typeof(GameObject), false) as GameObject;
+                }
+                serializedObject.ApplyModifiedProperties();
+                
+                return;
+            }
             
             if (useCustomPrefab)
             {
@@ -79,6 +93,7 @@ namespace Innoactive.CreatorEditor.UX
                 RemoveComponents(currentRequiredComponents);
                 currentRequiredComponents = availableCourseControllers[selectedIndex].GetRequiredSetupComponents();
                 AddComponents(currentRequiredComponents);
+                availableCourseControllers[selectedIndex].HandlePostSetup(setupObject.gameObject);
             }
 
             useCustomPrefabProperty.boolValue = useCustomPrefab;
