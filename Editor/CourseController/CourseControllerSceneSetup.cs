@@ -18,10 +18,9 @@ namespace Innoactive.CreatorEditor.UX
         /// <inheritdoc />
         public override void Setup()
         {
-            GameObject courseController = FindPrefab("[COURSE_CONTROLLER]");
-            courseController.name = courseController.name.Replace("(Clone)", string.Empty);
+            GameObject courseController = Object.Instantiate(FindPrefab("[COURSE_CONTROLLER]"));
             courseController.GetOrAddComponent<CourseControllerSetup>().ResetToDefault();
-            Object.Instantiate(courseController);
+            courseController.name = courseController.name.Replace("(Clone)", string.Empty);
         }
     }
 }

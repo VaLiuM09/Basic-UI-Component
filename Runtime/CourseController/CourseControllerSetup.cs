@@ -145,6 +145,7 @@ namespace Innoactive.Creator.UX
         /// <remarks>This may be used when instantiating a course controller prefab to make sure the default course controller is used.</remarks>
         public void ResetToDefault()
         {
+            RemoveComponents(GetCourseControllerFromType().GetRequiredSetupComponents());
             Type courseControllerType = RetrieveDefaultControllerType();
             courseControllerQualifiedName = courseControllerType.Name;
         }
