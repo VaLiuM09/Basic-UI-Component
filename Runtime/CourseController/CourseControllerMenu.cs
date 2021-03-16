@@ -8,7 +8,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Unity;
-using Innoactive.Creator.Core.IO;
 using Innoactive.Creator.TextToSpeech;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
@@ -91,9 +90,10 @@ namespace Innoactive.Creator.UX
         [SerializeField]
         private string fallbackLanguage = "EN";
 
-        private List<string> localizationFileNames;
+        protected List<string> localizationFileNames;
 
-        private string selectedLanguage;
+        protected string selectedLanguage;
+        
         private FieldInfo skipStepPickerEditorValueField;
 
         private IStep displayedStep;
@@ -253,53 +253,30 @@ namespace Innoactive.Creator.UX
 
         private List<string> FetchAvailableLocalizationsForTraining()
         {
-            // Get the directory of all localization files of the selected training.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = Path.GetDirectoryName(RuntimeConfigurator.Instance.GetSelectedCourse());
-            string pathToLocalizations = Path.Combine(pathToCourse, "Localization");
-
-            // Save all existing localization files in a list.
-            List<string> availableLocalizations = new List<string>();
-
-            try
-            {
-                // Parse the names without extension (.json) of all localization files.
-                // The name should be a valid two-letter ISO code (which also can be three letters long).
-                availableLocalizations = FileManager.FetchStreamingAssetsFilesAt(pathToLocalizations, "*.json")
-                    .ToList()
-                    .ConvertAll(Path.GetFileNameWithoutExtension)
-                    .Where(f => f.Length <= 3 && f.TryConvertToTwoLetterIsoCode(out f))
-                    .ToList();
-            }
-            catch (Exception exception)
-            {
-                Debug.LogWarning(exception is DirectoryNotFoundException ? $"The localization path '{pathToLocalizations}' does not exist. No localization files can be loaded." : $"{exception.Message}");
-            }
-
-            // Return the list of all available valid localizations.
-            return availableLocalizations;
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add(LocalizationReader.KeyCourseName, CourseRunner.Current.Data.Name);
+            return LocalizationUtils.FindAvailableLanguagesForConfig(GetLocalizationConfig(), parameters);
         }
 
-        private void LoadLocalizationForTraining(string coursePath)
+        protected virtual void LoadLocalizationForTraining(string coursePath)
         {
-            string courseName = Path.GetFileNameWithoutExtension(coursePath);
+            string course = Path.GetFileNameWithoutExtension(coursePath);
 
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
-
-            // Get the path to the file.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string localizationFilePath = Path.Combine("Training", courseName, "Localization", $"{language}.json");
-
-            // Check if the file really exists and load it.
-            if (FileManager.Exists(localizationFilePath))
+            
+            Localization.LoadLocalization(GetLocalizationConfig(), language, course);
+        }
+        
+        protected virtual LocalizationConfig GetLocalizationConfig()
+        {
+            ICourseController controller = FindObjectOfType<CourseControllerSetup>().CurrentCourseController;
+            if (controller is ILocalizationProvider localizationProvider)
             {
-                Localization.LoadLocalization(localizationFilePath);
-                return;
+                return localizationProvider.LocalizationConfig;
             }
-
-            // Log a warning if no language file was found.
-            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, courseName);
+            
+            return Resources.Load<LocalizationConfig>(LocalizationConfig.DefaultLocalizationConfig);
         }
 
         private void FastForwardChapters(int numberOfChapters)
