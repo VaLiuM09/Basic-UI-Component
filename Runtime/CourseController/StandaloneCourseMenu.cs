@@ -99,32 +99,26 @@ namespace Innoactive.Creator.UX
 
         private void Awake()
         {
-            // Get the current system language as default language.
-            selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
-
-            // Check if the fallback language is a valid language.
-            fallbackLanguage = fallbackLanguage.Trim();
-            
-            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out string validFallbackLanguage))
-            {
-                fallbackLanguage = validFallbackLanguage;
-            }
-            // If not, use "EN" instead.
-            else
-            {
-                Debug.LogWarningFormat("'{0}' is no valid language. Changed fallback language to 'EN'.", fallbackLanguage);
-                fallbackLanguage = "EN";
-            }
-
-            // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
-            if (string.IsNullOrEmpty(ttsConfiguration.Language) == false)
-            {
-                selectedLanguage = ttsConfiguration.Language;
-            }
-            
             // Get all the available localization files for the selected training.
             localizationFileNames = FetchAvailableLocalizationsForTraining();
+            
+            if (LanguageSettings.Instance.ActiveLanguage != null)
+            {
+                selectedLanguage = LanguageSettings.Instance.ActiveLanguage;
+            }
+            else if (localizationFileNames.Contains(LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToLower()))
+            {
+                selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
+                LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
+            }
+            else
+            {
+                LanguageSettings.Instance.ActiveLanguage = LanguageSettings.Instance.DefaultLanguage;
+            }
+            
+            // Load the localization for the current selected course.
+            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
+            SetupTraining();
             
             // Setup UI controls.
             SetupChapterPicker();
@@ -135,9 +129,6 @@ namespace Innoactive.Creator.UX
             SetupSoundToggle();
             SetupLanguagePicker();
             SetupModePicker();
-            
-            // Load the localization for the current selected course.
-            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
             
             // Update the UI.
             SetupTrainingDependantUI();
@@ -181,14 +172,14 @@ namespace Innoactive.Creator.UX
 
         private void UpdateDisplayedChapter(IChapter chapter)
         {
-                // Get a collection of available chapters.
-                IList<IChapter> chapters = CourseRunner.Current == null ? new List<IChapter>() : CourseRunner.Current.Data.Chapters.ToList();
+            // Get a collection of available chapters.
+            IList<IChapter> chapters = CourseRunner.Current == null ? new List<IChapter>() : CourseRunner.Current.Data.Chapters.ToList();
 
-                // Skip all finished chapters.
-                int startingIndex = chapter == null ? 0 : chapters.IndexOf(chapter);
+            // Skip all finished chapters.
+            int startingIndex = chapter == null ? 0 : chapters.IndexOf(chapter);
 
-                // Show the rest.
-                PopulateChapterPickerOptions(startingIndex);
+            // Show the rest.
+            PopulateChapterPickerOptions(startingIndex);
         }
 
         private void SetupTraining()
@@ -231,6 +222,7 @@ namespace Innoactive.Creator.UX
         {
             string course = Path.GetFileNameWithoutExtension(coursePath);
 
+            LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
             // Find the correct file name of the current selected language.
             string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
             
@@ -413,9 +405,9 @@ namespace Innoactive.Creator.UX
                 {
                     selectedLanguage = supportedLanguages[languagePicker.value];
                 }
-                else if (string.IsNullOrEmpty(RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language) == false)
+                else if (string.IsNullOrEmpty(LanguageSettings.Instance.DefaultLanguage) == false)
                 {
-                    languagePicker.AddOptions(new List<string>() { RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language.ToUpper() });
+                    languagePicker.AddOptions(new List<string>() { LanguageSettings.Instance.DefaultLanguage.ToUpper() });
                 }
                 // Or use the fallback language, if there is no valid localization file at all.
                 else
@@ -431,7 +423,7 @@ namespace Innoactive.Creator.UX
             {
                 // Set the supported language based on the user selection.
                 selectedLanguage = supportedLanguages[itemIndex];
-                RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
+                LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
                 // Load the training and localize it to the selected language.
                 SetupTraining();
                 // Update the UI.
