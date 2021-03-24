@@ -20,7 +20,7 @@ namespace Innoactive.Creator.UX
     /// <summary>
     /// Standalone controller class for an example of a custom training overlay with audio and localization.
     /// </summary>
-    public class StandaloneCourseMenu : MonoBehaviour
+    public class StandaloneCourseMenu : BaseCourseControllerMenu
     {
         #region UI elements
         [Tooltip("Chapter picker dropdown.")]
@@ -88,8 +88,6 @@ namespace Innoactive.Creator.UX
         [SerializeField]
         private string fallbackLanguage = "EN";
 
-        private List<string> localizationFileNames;
-
         private string selectedLanguage;
         private FieldInfo skipStepPickerEditorValueField;
 
@@ -99,22 +97,8 @@ namespace Innoactive.Creator.UX
 
         private void Awake()
         {
-            // Get all the available localization files for the selected training.
-            localizationFileNames = FetchAvailableLocalizationsForTraining();
-            
-            if (LanguageSettings.Instance.ActiveLanguage != null)
-            {
-                selectedLanguage = LanguageSettings.Instance.ActiveLanguage;
-            }
-            else if (localizationFileNames.Contains(LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToLower()))
-            {
-                selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
-                LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
-            }
-            else
-            {
-                LanguageSettings.Instance.ActiveLanguage = LanguageSettings.Instance.DefaultLanguage;
-            }
+            selectedLanguage = GetSelectedLanguage();
+            LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
             
             // Load the localization for the current selected course.
             LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
@@ -205,31 +189,18 @@ namespace Innoactive.Creator.UX
             CourseRunner.Initialize(trainingCourse);
         }
 
-        protected virtual List<string> FetchAvailableLocalizationsForTraining()
-        {
-            // Save all existing localization files in a list.
-            List<string> availableLocalizations = new List<string>();
-
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add(LocalizationReader.KeyCourseName, CourseRunner.Current.Data.Name);
-            availableLocalizations = LocalizationUtils.FindAvailableLanguagesForConfig(GetLocalizationConfig(), parameters);
-            
-            // Return the list of all available valid localizations.
-            return availableLocalizations;
-        }
-
         protected virtual void LoadLocalizationForTraining(string coursePath)
         {
             string course = Path.GetFileNameWithoutExtension(coursePath);
 
             LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
             // Find the correct file name of the current selected language.
-            string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
+            string language = LocalizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
             
             Localization.LoadLocalization(GetLocalizationConfig(), language, course);
         }
         
-        protected virtual LocalizationConfig GetLocalizationConfig()
+        protected override LocalizationConfig GetLocalizationConfig()
         {
             ICourseController controller = FindObjectOfType<CourseControllerSetup>().CurrentCourseController;
             if (controller is ILocalizationProvider localizationProvider)
@@ -383,7 +354,7 @@ namespace Innoactive.Creator.UX
             List<string> supportedLanguages = new List<string>();
 
             // Add each language in capital letters to the list of supported languages.
-            foreach (string file in localizationFileNames)
+            foreach (string file in LocalizationFileNames)
             {
                 supportedLanguages.Add(file.ToUpper());
             }

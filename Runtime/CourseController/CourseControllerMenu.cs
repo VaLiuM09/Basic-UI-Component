@@ -18,7 +18,7 @@ namespace Innoactive.Creator.UX
     /// <summary>
     /// Controller class for an example of a custom training overlay with audio and localization.
     /// </summary>
-    public class CourseControllerMenu : MonoBehaviour
+    public class CourseControllerMenu : BaseCourseControllerMenu
     {
         #region UI elements
         [Tooltip("Menu panel.")]
@@ -86,8 +86,6 @@ namespace Innoactive.Creator.UX
         private Dropdown modePicker = null;
         #endregion
         
-        protected List<string> localizationFileNames;
-
         protected string selectedLanguage;
         
         private FieldInfo skipStepPickerEditorValueField;
@@ -105,23 +103,9 @@ namespace Innoactive.Creator.UX
 
         protected virtual void SetupMenu()
         {
-            // Get all the available localization files for the selected training.
-            localizationFileNames = FetchAvailableLocalizationsForTraining();
-
-            if (LanguageSettings.Instance.ActiveLanguage != null)
-            {
-                selectedLanguage = LanguageSettings.Instance.ActiveLanguage;
-            }
-            else if (localizationFileNames.Contains(LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToLower()))
-            {
-                selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode();
-                LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
-            }
-            else
-            {
-                LanguageSettings.Instance.ActiveLanguage = LanguageSettings.Instance.DefaultLanguage;
-            }
-
+            selectedLanguage = GetSelectedLanguage();
+            LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
+            
             // Load the localization for the current selected course.
             LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
             SetupTraining();
@@ -238,33 +222,16 @@ namespace Innoactive.Creator.UX
             CourseRunner.Initialize(trainingCourse);
         }
 
-        private List<string> FetchAvailableLocalizationsForTraining()
-        {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add(LocalizationReader.KeyCourseName, CourseRunner.Current.Data.Name);
-            return LocalizationUtils.FindAvailableLanguagesForConfig(GetLocalizationConfig(), parameters);
-        }
-
         protected virtual void LoadLocalizationForTraining(string coursePath)
         {
             string course = Path.GetFileNameWithoutExtension(coursePath);
 
             LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
+
             // Find the correct file name of the current selected language.
-            string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
+            string language = LocalizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
             
             Localization.LoadLocalization(GetLocalizationConfig(), language, course);
-        }
-        
-        protected virtual LocalizationConfig GetLocalizationConfig()
-        {
-            ICourseController controller = FindObjectOfType<CourseControllerSetup>().CurrentCourseController;
-            if (controller is ILocalizationProvider localizationProvider)
-            {
-                return localizationProvider.LocalizationConfig;
-            }
-            
-            return Resources.Load<LocalizationConfig>(LocalizationConfig.DefaultLocalizationConfig);
         }
 
         private void FastForwardChapters(int numberOfChapters)
@@ -410,7 +377,7 @@ namespace Innoactive.Creator.UX
             List<string> supportedLanguages = new List<string>();
 
             // Add each language in capital letters to the list of supported languages.
-            foreach (string file in localizationFileNames)
+            foreach (string file in LocalizationFileNames)
             {
                 supportedLanguages.Add(file.ToUpper());
             }
@@ -432,9 +399,11 @@ namespace Innoactive.Creator.UX
                 {
                     selectedLanguage = supportedLanguages[languagePicker.value];
                 }
-                else if (string.IsNullOrEmpty(LanguageSettings.Instance.ActiveLanguage) == false)
+                else
                 {
-                    languagePicker.AddOptions(new List<string>() { LanguageSettings.Instance.ActiveLanguage.ToUpper() });
+                    supportedLanguages.Add(LanguageSettings.Instance.ActiveOrDefaultLanguage.ToUpper());
+                    languagePicker.AddOptions(new List<string>() { supportedLanguages[0] });
+                    selectedLanguage = supportedLanguages[0];
                 }
             }
 
@@ -444,6 +413,10 @@ namespace Innoactive.Creator.UX
                 // Set the supported language based on the user selection.
                 selectedLanguage = supportedLanguages[itemIndex];
                 LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
+                
+                languagePicker.value = itemIndex;
+                languagePicker.RefreshShownValue();
+                
                 // Load the training and localize it to the selected language.
                 LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
                 SetupTraining();
