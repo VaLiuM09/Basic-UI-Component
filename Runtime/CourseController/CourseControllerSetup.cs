@@ -138,5 +138,16 @@ namespace Innoactive.Creator.UX
         {
             enforcedCourseController = courseController;
         }
+
+        /// <summary>
+        /// Resets the <cref name="courseControllerQualifiedName"/> to the name of the course controller with the highest priority.
+        /// </summary>
+        /// <remarks>This may be used when instantiating a course controller prefab to make sure the default course controller is used.</remarks>
+        public void ResetToDefault()
+        {
+            RemoveComponents(GetCourseControllerFromType().GetRequiredSetupComponents());
+            Type courseControllerType = RetrieveDefaultControllerType();
+            courseControllerQualifiedName = courseControllerType.Name;
+        }
     }
 }

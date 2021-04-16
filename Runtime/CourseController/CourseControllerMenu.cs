@@ -8,7 +8,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Unity;
-using Innoactive.Creator.Core.IO;
 using Innoactive.Creator.TextToSpeech;
 using Innoactive.Creator.Core.Configuration;
 using Innoactive.Creator.Core.Configuration.Modes;
@@ -19,7 +18,7 @@ namespace Innoactive.Creator.UX
     /// <summary>
     /// Controller class for an example of a custom training overlay with audio and localization.
     /// </summary>
-    public class CourseControllerMenu : MonoBehaviour
+    public class CourseControllerMenu : BaseCourseControllerMenu
     {
         #region UI elements
         [Tooltip("Menu panel.")]
@@ -86,14 +85,9 @@ namespace Innoactive.Creator.UX
         [SerializeField]
         private Dropdown modePicker = null;
         #endregion
-
-        [Tooltip("The two-letter ISO language code (e.g. \"EN\") of the fallback language which is used by the text to speech engine if no valid localization file is found.")]
-        [SerializeField]
-        private string fallbackLanguage = "EN";
-
-        private List<string> localizationFileNames;
-
-        private string selectedLanguage;
+        
+        protected string selectedLanguage;
+        
         private FieldInfo skipStepPickerEditorValueField;
 
         private IStep displayedStep;
@@ -109,32 +103,12 @@ namespace Innoactive.Creator.UX
 
         protected virtual void SetupMenu()
         {
-            // Get the current system language as default language.
-            selectedLanguage = LocalizationUtils.GetSystemLanguageAsTwoLetterIsoCode().ToUpper();
-
-            // Check if the fallback language is a valid language.
-            fallbackLanguage = fallbackLanguage.Trim();
-
-            if (fallbackLanguage.TryConvertToTwoLetterIsoCode(out string validFallbackLanguage))
-            {
-                fallbackLanguage = validFallbackLanguage;
-            }
-            // If not, use "EN" instead.
-            else
-            {
-                Debug.LogWarningFormat("'{0}' is no valid language. Changed fallback language to 'EN'.", fallbackLanguage);
-                fallbackLanguage = "EN";
-            }
-
-            // You can define which TTS engine is used through TTS config.
-            TextToSpeechConfiguration ttsConfiguration = RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration();
-            if (string.IsNullOrEmpty(ttsConfiguration.Language) == false)
-            {
-                selectedLanguage = ttsConfiguration.Language;
-            }
-
-            // Get all the available localization files for the selected training.
-            localizationFileNames = FetchAvailableLocalizationsForTraining();
+            selectedLanguage = GetSelectedLanguage();
+            LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
+            
+            // Load the localization for the current selected course.
+            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
+            SetupTraining();
 
             // Setup UI controls.
             SetupChapterPicker();
@@ -145,9 +119,6 @@ namespace Innoactive.Creator.UX
             SetupSoundToggle();
             SetupLanguagePicker();
             SetupModePicker();
-
-            // Load the localization for the current selected course.
-            LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
 
             // Update the UI.
             SetupTrainingDependantUI();
@@ -251,55 +222,16 @@ namespace Innoactive.Creator.UX
             CourseRunner.Initialize(trainingCourse);
         }
 
-        private List<string> FetchAvailableLocalizationsForTraining()
+        protected virtual void LoadLocalizationForTraining(string coursePath)
         {
-            // Get the directory of all localization files of the selected training.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]' folder.
-            string pathToCourse = Path.GetDirectoryName(RuntimeConfigurator.Instance.GetSelectedCourse());
-            string pathToLocalizations = Path.Combine(pathToCourse, "Localization");
+            string course = Path.GetFileNameWithoutExtension(coursePath);
 
-            // Save all existing localization files in a list.
-            List<string> availableLocalizations = new List<string>();
-
-            try
-            {
-                // Parse the names without extension (.json) of all localization files.
-                // The name should be a valid two-letter ISO code (which also can be three letters long).
-                availableLocalizations = FileManager.FetchStreamingAssetsFilesAt(pathToLocalizations, "*.json")
-                    .ToList()
-                    .ConvertAll(Path.GetFileNameWithoutExtension)
-                    .Where(f => f.Length <= 3 && f.TryConvertToTwoLetterIsoCode(out f))
-                    .ToList();
-            }
-            catch (Exception exception)
-            {
-                Debug.LogWarning(exception is DirectoryNotFoundException ? $"The localization path '{pathToLocalizations}' does not exist. No localization files can be loaded." : $"{exception.Message}");
-            }
-
-            // Return the list of all available valid localizations.
-            return availableLocalizations;
-        }
-
-        private void LoadLocalizationForTraining(string coursePath)
-        {
-            string courseName = Path.GetFileNameWithoutExtension(coursePath);
+            LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
 
             // Find the correct file name of the current selected language.
-            string language = localizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
-
-            // Get the path to the file.
-            // It should be in the '[YOUR_PROJECT_ROOT_FOLDER]/StreamingAssets/Training/[TRAINING_NAME]/Localization' folder.
-            string localizationFilePath = Path.Combine("Training", courseName, "Localization", $"{language}.json");
-
-            // Check if the file really exists and load it.
-            if (FileManager.Exists(localizationFilePath))
-            {
-                Localization.LoadLocalization(localizationFilePath);
-                return;
-            }
-
-            // Log a warning if no language file was found.
-            Debug.LogWarningFormat("No language file for language '{0}' found for training at '{1}'.", selectedLanguage, courseName);
+            string language = LocalizationFileNames.Find(f => string.Equals(f, selectedLanguage, StringComparison.CurrentCultureIgnoreCase));
+            
+            Localization.LoadLocalization(GetLocalizationConfig(), language, course);
         }
 
         private void FastForwardChapters(int numberOfChapters)
@@ -445,7 +377,7 @@ namespace Innoactive.Creator.UX
             List<string> supportedLanguages = new List<string>();
 
             // Add each language in capital letters to the list of supported languages.
-            foreach (string file in localizationFileNames)
+            foreach (string file in LocalizationFileNames)
             {
                 supportedLanguages.Add(file.ToUpper());
             }
@@ -467,26 +399,24 @@ namespace Innoactive.Creator.UX
                 {
                     selectedLanguage = supportedLanguages[languagePicker.value];
                 }
-                else if (string.IsNullOrEmpty(RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language) == false)
-                {
-                    languagePicker.AddOptions(new List<string>() { RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language.ToUpper() });
-                }
-                // Or use the fallback language, if there is no valid localization file at all.
                 else
                 {
-                    selectedLanguage = fallbackLanguage;
-                    // Add the fallback language as option of the dropdown menu. Otherwise, the picker would be empty.
-                    languagePicker.AddOptions(new List<string>() { fallbackLanguage.ToUpper() });
+                    supportedLanguages.Add(LanguageSettings.Instance.ActiveOrDefaultLanguage.ToUpper());
+                    languagePicker.AddOptions(new List<string>() { supportedLanguages[0] });
+                    selectedLanguage = supportedLanguages[0];
                 }
             }
-
 
             // When the selected language is changed, setup a training from scratch.
             languagePicker.onValueChanged.AddListener(itemIndex =>
             {
                 // Set the supported language based on the user selection.
                 selectedLanguage = supportedLanguages[itemIndex];
-                RuntimeConfigurator.Configuration.GetTextToSpeechConfiguration().Language = selectedLanguage;
+                LanguageSettings.Instance.ActiveLanguage = selectedLanguage;
+                
+                languagePicker.value = itemIndex;
+                languagePicker.RefreshShownValue();
+                
                 // Load the training and localize it to the selected language.
                 LoadLocalizationForTraining(RuntimeConfigurator.Instance.GetSelectedCourse());
                 SetupTraining();
