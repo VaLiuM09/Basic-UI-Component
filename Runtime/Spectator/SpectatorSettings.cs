@@ -29,6 +29,13 @@ namespace Innoactive.Creator.UX
         }
 
 #if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// Duplicates and returns an InputActionAsset in the Resources of the project.
+        /// </summary>
+        /// <param name="originalAssetName">Name of the file to duplicate.</param>
+        /// <param name="targetPath">Destination path.</param>
+        /// <param name="targetAssetName">Optional destination name.</param>
+        /// <returns>The copied InputActionAsset.</returns>
         public static InputActionAsset DuplicateAndSetKeyBindings(string originalAssetName, string targetPath, string targetAssetName = null)
         {
             if (targetAssetName == null)
