@@ -3820,7 +3820,6 @@ MonoBehaviour:
   soundOffImage: {fileID: 21300000, guid: 206dcfd02b7889a46a94f185abb59dfa, type: 3}
   languagePicker: {fileID: 8755728067988527896}
   modePicker: {fileID: 8755476571103678268}
-  fallbackLanguage: EN
 --- !u!114 &6994319526275256461
 MonoBehaviour:
   m_ObjectHideFlags: 0
