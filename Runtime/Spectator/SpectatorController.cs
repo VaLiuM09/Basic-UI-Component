@@ -11,7 +11,7 @@ namespace Innoactive.Creator.UX
     /// </summary>
     public class SpectatorController : MonoBehaviour
     {
-        /// <summary>spe
+        /// <summary>
         /// Event fired when UI visibility is toggled.
         /// </summary>
         public event EventHandler ToggleUIOverlayVisibility;
