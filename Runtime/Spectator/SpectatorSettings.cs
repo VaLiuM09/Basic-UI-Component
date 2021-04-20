@@ -20,7 +20,7 @@ namespace Innoactive.Creator.UX
 
         private void OnEnable()
         {
-#if ENABLE_INPUT_SYSTEM
+#if ENABLE_INPUT_SYSTEM && UNITY_EDITOR
             if (KeyBindingSettings == null && !Application.isPlaying)
             {
                 KeyBindingSettings = DuplicateAndSetKeyBindings(KeyBindingsAssetName, KeyBindingsPath);
@@ -28,7 +28,7 @@ namespace Innoactive.Creator.UX
 #endif
         }
 
-#if ENABLE_INPUT_SYSTEM
+#if ENABLE_INPUT_SYSTEM && UNITY_EDITOR
         /// <summary>
         /// Duplicates and returns an InputActionAsset in the Resources of the project.
         /// </summary>
