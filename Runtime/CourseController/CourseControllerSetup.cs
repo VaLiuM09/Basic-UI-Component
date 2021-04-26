@@ -101,7 +101,7 @@ namespace Innoactive.Creator.UX
 
         private Type RetrieveDefaultControllerType()
         {
-            return ReflectionUtils.GetFinalImplementationsOf<ICourseController>()
+            return ReflectionUtils.GetConcreteImplementationsOf<ICourseController>()
                 .Select(c => (ICourseController) ReflectionUtils.CreateInstanceOfType(c)).OrderByDescending(controller => controller.Priority)
                 .First()
                 .GetType();

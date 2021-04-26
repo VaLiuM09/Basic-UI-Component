@@ -39,7 +39,7 @@ namespace Innoactive.CreatorEditor.UX
             customPrefab = (GameObject) customPrefabProperty.objectReferenceValue;
             setupObject = (CourseControllerSetup) serializedObject.targetObject;
 
-            availableCourseControllers = ReflectionUtils.GetFinalImplementationsOf<ICourseController>()
+            availableCourseControllers = ReflectionUtils.GetConcreteImplementationsOf<ICourseController>()
                 .Select(c => (ICourseController) ReflectionUtils.CreateInstanceOfType(c)).OrderByDescending(controller => controller.Priority).ToArray();
 
             availableCourseControllerNames = availableCourseControllers.Select(controller => controller.Name).ToArray();
