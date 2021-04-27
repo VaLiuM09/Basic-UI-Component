@@ -6,7 +6,7 @@ namespace Innoactive.Creator.UX
     /// <summary>
     /// Course controller for standalone devices like the Oculus Quest.
     /// </summary>
-    public class StandaloneCourseController : UIBaseCourseController
+    public class StandaloneCourseController : BaseCourseController
     {
         /// <inheritdoc />
         public override string Name { get; } = "Standalone";
@@ -21,6 +21,20 @@ namespace Innoactive.Creator.UX
         protected override string PrefabName { get; } = "StandaloneCourseController";
         
         /// <inheritdoc />
-        public override string CourseMenuPrefabName { get; } = "StandaloneCourseControllerMenu";
+        public string CourseMenuPrefabName { get; } = "StandaloneCourseControllerMenu";
+        
+        /// <summary>
+        /// Gets a course controller menu game object.
+        /// </summary>
+        public virtual GameObject GetCourseMenuPrefab()
+        {
+            return Resources.Load<GameObject>($"Prefabs/{CourseMenuPrefabName}");
+        }
+        
+        /// <inheritdoc />
+        public override void HandlePostSetup(GameObject courseControllerObject)
+        {
+            courseControllerObject.GetComponent<CourseMenuSpawner>().SetDefaultPrefab(GetCourseMenuPrefab());
+        }
     }
 }

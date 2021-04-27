@@ -26,7 +26,6 @@ namespace Innoactive.Creator.UX
         {
             List<Type> requiredSetupComponents = base.GetRequiredSetupComponents();
             requiredSetupComponents.Add(typeof(SpectatorController));
-            requiredSetupComponents.Add(typeof(PlayerInput));
             return requiredSetupComponents;
         }
     }
