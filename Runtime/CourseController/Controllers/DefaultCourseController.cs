@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 namespace Innoactive.Creator.UX
 {
@@ -10,10 +11,10 @@ namespace Innoactive.Creator.UX
     {
         /// <inheritdoc />
         public override string Name { get; } = "Default";
-        
+
         /// <inheritdoc />
         protected override string PrefabName { get; } = "DefaultCourseController";
-        
+
         /// <inheritdoc />
         public override int Priority { get; } = 50;
 
@@ -25,6 +26,7 @@ namespace Innoactive.Creator.UX
         {
             List<Type> requiredSetupComponents = base.GetRequiredSetupComponents();
             requiredSetupComponents.Add(typeof(SpectatorController));
+            requiredSetupComponents.Add(typeof(PlayerInput));
             return requiredSetupComponents;
         }
     }

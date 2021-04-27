@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innoactive.Creator.Core.Configuration;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Innoactive.Creator.UX
 {
@@ -13,6 +15,11 @@ namespace Innoactive.Creator.UX
         /// Name of the course controller menu prefab.
         /// </summary>
         public abstract string CourseMenuPrefabName { get; }
+
+        /// <summary>
+        /// Control scheme used in the input controller.
+        /// </summary>
+        protected virtual string ControlScheme { get; } = "Keyboard&Mouse";
         
         /// <summary>
         /// Gets a course controller menu game object.
@@ -32,6 +39,12 @@ namespace Innoactive.Creator.UX
         public override void HandlePostSetup(GameObject courseControllerObject)
         {
             courseControllerObject.GetComponent<CourseMenuSpawner>().SetDefaultPrefab(GetCourseMenuPrefab());
+            PlayerInput playerInput = courseControllerObject.GetComponent<PlayerInput>();
+            if (playerInput != null) 
+            {
+                playerInput.actions = RuntimeConfigurator.Configuration.CurrentInputActionAsset;
+                playerInput.defaultControlScheme = ControlScheme;
+            }
         }
     }
 }
