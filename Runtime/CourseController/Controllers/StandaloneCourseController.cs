@@ -1,4 +1,6 @@
-﻿using Innoactive.Creator.Core.Internationalization;
+﻿using System;
+using System.Collections.Generic;
+using Innoactive.Creator.Core.Internationalization;
 using UnityEngine;
 
 namespace Innoactive.Creator.UX
@@ -30,7 +32,15 @@ namespace Innoactive.Creator.UX
         {
             return Resources.Load<GameObject>($"Prefabs/{CourseMenuPrefabName}");
         }
-        
+
+        /// <inheritdoc />
+        public override List<Type> GetRequiredSetupComponents()
+        {
+            List<Type> requiredComponents = base.GetRequiredSetupComponents();
+            requiredComponents.Add(typeof(CourseMenuSpawner));
+            return requiredComponents;
+        }
+
         /// <inheritdoc />
         public override void HandlePostSetup(GameObject courseControllerObject)
         {
