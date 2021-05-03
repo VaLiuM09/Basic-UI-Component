@@ -1,6 +1,5 @@
 ﻿using System;
 using Innoactive.Creator.Core.Input;
-using UnityEngine.InputSystem;
 
 namespace Innoactive.Creator.UX
 {
@@ -24,7 +23,7 @@ namespace Innoactive.Creator.UX
             UnregisterInputEvent(ToggleOverlay);
         }
 
-        protected void ToggleOverlay(InputAction.CallbackContext value)
+        protected void ToggleOverlay(InputController.InputEventArgs args)
         {
             ToggleUIOverlayVisibility?.Invoke(this, new EventArgs());
         }

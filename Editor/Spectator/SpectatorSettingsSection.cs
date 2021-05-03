@@ -1,5 +1,4 @@
 ﻿using System;
-using Innoactive.Creator.Core.Configuration;
 using Innoactive.CreatorEditor.Input;
 using UnityEditor;
 using UnityEngine;
@@ -21,12 +20,7 @@ namespace Innoactive.CreatorEditor.UI
 
             if (GUILayout.Button("Edit key bindings"))
             {
-                if (InputEditorUtils.UsesCustomKeyBindingAsset() == false)
-                {
-                    InputEditorUtils.CopyCustomKeyBindingAsset();
-                }
-                
-                AssetDatabase.OpenAsset(RuntimeConfigurator.Configuration.CurrentInputActionAsset);
+                InputEditorUtils.OpenKeyBindingEditor();
             }
 
             EditorGUILayout.Space(20f);
