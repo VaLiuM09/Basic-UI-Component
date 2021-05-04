@@ -10,10 +10,10 @@ namespace Innoactive.Creator.UX
     {
         /// <inheritdoc />
         public override string Name { get; } = "Default";
-        
+
         /// <inheritdoc />
         protected override string PrefabName { get; } = "DefaultCourseController";
-        
+
         /// <inheritdoc />
         public override int Priority { get; } = 50;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Innoactive.Creator.Core;
 using Innoactive.Creator.Core.Utils;
 using Innoactive.Creator.UX;
@@ -39,7 +40,7 @@ namespace Innoactive.CreatorEditor.UX
             customPrefab = (GameObject) customPrefabProperty.objectReferenceValue;
             setupObject = (CourseControllerSetup) serializedObject.targetObject;
 
-            availableCourseControllers = ReflectionUtils.GetFinalImplementationsOf<ICourseController>()
+            availableCourseControllers = ReflectionUtils.GetConcreteImplementationsOf<ICourseController>()
                 .Select(c => (ICourseController) ReflectionUtils.CreateInstanceOfType(c)).OrderByDescending(controller => controller.Priority).ToArray();
 
             availableCourseControllerNames = availableCourseControllers.Select(controller => controller.Name).ToArray();
@@ -51,6 +52,13 @@ namespace Innoactive.CreatorEditor.UX
             }
             
             currentRequiredComponents = availableCourseControllers[selectedIndex].GetRequiredSetupComponents();
+            currentRequiredComponents.AddRange(currentRequiredComponents
+                .SelectMany(type => type.GetCustomAttributes(typeof(RequireComponent)).Cast<RequireComponent>())
+                .SelectMany(component => new List<Type>() {component.m_Type0, component.m_Type1, component.m_Type2})
+                .Where(type => type != null)
+                .Distinct()
+                .Except(currentRequiredComponents)
+                .ToList());
         }
 
         public override void OnInspectorGUI()

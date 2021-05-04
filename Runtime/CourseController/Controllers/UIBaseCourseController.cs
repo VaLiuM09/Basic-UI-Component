@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innoactive.Creator.Core.Input;
 using UnityEngine;
 
 namespace Innoactive.Creator.UX
@@ -13,7 +14,7 @@ namespace Innoactive.Creator.UX
         /// Name of the course controller menu prefab.
         /// </summary>
         public abstract string CourseMenuPrefabName { get; }
-        
+
         /// <summary>
         /// Gets a course controller menu game object.
         /// </summary>
@@ -25,7 +26,7 @@ namespace Innoactive.Creator.UX
         /// <inheritdoc />
         public override List<Type> GetRequiredSetupComponents()
         {
-            return new List<Type> {typeof(CourseMenuSpawner)};
+            return new List<Type> {typeof(CourseMenuSpawner), InputController.ConcreteType};
         }
 
         /// <inheritdoc />

@@ -125,11 +125,15 @@ namespace Innoactive.Creator.UX
 
             // Subscribe to controller events.
             SubscribeToControllerEvents();
+
+            // Subscribe to course events.
+            SubscribeToCourseEvents();
         }
 
         protected virtual void OnDisable()
         {
             UnsubscribeFromControllerEvents();
+            UnsubscribeToCourseEvents();
         }
 
         protected virtual void Update()
@@ -150,7 +154,10 @@ namespace Innoactive.Creator.UX
             }
         }
 
-        private void SubscribeToControllerEvents()
+        /// <summary>
+        /// Subscribes to events of the course controller.
+        /// </summary>
+        protected virtual void SubscribeToControllerEvents()
         {
             spectatorController = FindObjectOfType<SpectatorController>();
             if (spectatorController != null)
@@ -159,12 +166,61 @@ namespace Innoactive.Creator.UX
             }
         }
 
-        private void UnsubscribeFromControllerEvents()
+        /// <summary>
+        /// Unsubscribes from events of the course controller.
+        /// </summary>
+        protected virtual void UnsubscribeFromControllerEvents()
         {
             if (spectatorController != null)
             {
                 spectatorController.ToggleUIOverlayVisibility -= ToggleUIVisibility;
             }
+        }
+        
+        /// <summary>
+        /// Subscribes to course events.
+        /// </summary>
+        protected virtual void SubscribeToCourseEvents()
+        {
+            CourseRunner.Events.CourseStarted += OnCourseStarted;
+            CourseRunner.Events.CourseFinished += OnCourseFinished;
+        }
+        
+        /// <summary>
+        /// Unsubscribes from course events.
+        /// </summary>
+        protected virtual void UnsubscribeToCourseEvents()
+        {
+            CourseRunner.Events.CourseStarted -= OnCourseStarted;
+            CourseRunner.Events.CourseFinished -= OnCourseFinished;
+        }
+        
+        /// <summary>
+        /// Is called when the course started event is triggered.
+        /// </summary>
+        /// <param name="sender">Sender of the event.</param>
+        /// <param name="courseEventArgs">Course event arguments.</param>
+        protected virtual void OnCourseStarted(object sender, CourseEventArgs courseEventArgs)
+        {
+            // Show the skip step button instead of the start button.
+            skipStepPicker.gameObject.SetActive(true);
+            startTrainingButton.gameObject.SetActive(false);
+
+            // Disable button as you have to reset scene before starting the training again.
+            startTrainingButton.interactable = false;
+            // Disable the language picker as it is not allowed to change the language during the training's execution.
+            languagePicker.interactable = false;
+        }
+        
+        /// <summary>
+        /// Is called when the course finished event is triggered.
+        /// </summary>
+        /// <param name="sender">Sender of the event.</param>
+        /// <param name="courseEventArgs">Course event arguments.</param>
+        protected virtual void OnCourseFinished(object sender, CourseEventArgs courseEventArgs)
+        {
+            skipStepPicker.gameObject.SetActive(false);
+            startTrainingButton.gameObject.SetActive(true);
         }
 
         private void ToggleUIVisibility(object sender, EventArgs args)
@@ -297,30 +353,13 @@ namespace Innoactive.Creator.UX
                     return;
                 }
 
-                // Subscribe to the "stage changed" event of the current training in order to change the skip step button to the start button after finishing the training.
-                CourseRunner.Current.LifeCycle.StageChanged += (sender, args) =>
-                {
-                    if (args.Stage == Stage.Inactive)
-                    {
-                        skipStepPicker.gameObject.SetActive(false);
-                        startTrainingButton.gameObject.SetActive(true);
-                    }
-                };
-
                 //Skip all chapters before selected.
                 FastForwardChapters(chapterPicker.value);
 
                 // Start the training
                 CourseRunner.Run();
 
-                // Show the skip step button instead of the start button.
-                skipStepPicker.gameObject.SetActive(true);
-                startTrainingButton.gameObject.SetActive(false);
-
-                // Disable button as you have to reset scene before starting the training again.
-                startTrainingButton.interactable = false;
-                // Disable the language picker as it is not allowed to change the language during the training's execution.
-                languagePicker.interactable = false;
+                
             });
         }
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using Innoactive.Creator.UX;
+using Innoactive.CreatorEditor.Input;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,13 +11,6 @@ namespace Innoactive.CreatorEditor.UI
         public Type TargetPageProvider { get; } = typeof(SpectatorSettingsProvider);
         public int Priority { get; } = 100;
 
-        private Editor editor;
-
-        public SpectatorSettingsSection()
-        {
-            editor = Editor.CreateEditor(SpectatorSettings.Instance);
-        }
-
         public void OnGUI(string searchContext)
         {
             EditorGUILayout.Space();
@@ -25,7 +18,10 @@ namespace Innoactive.CreatorEditor.UI
             GUILayout.Label("These settings help you to configure the spectator for non-VR users.", labelStyle);
             EditorGUILayout.Space();
 
-            editor.OnInspectorGUI();
+            if (GUILayout.Button("Edit key bindings"))
+            {
+                InputEditorUtils.OpenKeyBindingEditor();
+            }
 
             EditorGUILayout.Space(20f);
         }
