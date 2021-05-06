@@ -7,15 +7,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Unity;
-using Innoactive.Creator.Core.IO;
-using Innoactive.Creator.TextToSpeech;
-using Innoactive.Creator.Core.Configuration;
-using Innoactive.Creator.Core.Configuration.Modes;
-using Innoactive.Creator.Core.Internationalization;
+using VPG.Creator.Core;
+using VPG.Creator.Unity;
+using VPG.Creator.Core.IO;
+using VPG.Creator.TextToSpeech;
+using VPG.Creator.Core.Configuration;
+using VPG.Creator.Core.Configuration.Modes;
+using VPG.Creator.Core.Internationalization;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Standalone controller class for an example of a custom training overlay with audio and localization.

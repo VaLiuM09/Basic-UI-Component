@@ -1,7 +1,7 @@
 ﻿using System;
-using Innoactive.Creator.Core.Input;
+using VPG.Creator.Core.Input;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Controller for a spectator to toggle UI visibility.

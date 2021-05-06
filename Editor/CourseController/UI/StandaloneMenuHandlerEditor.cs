@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Innoactive.Creator.UX;
+using VPG.Creator.UX;
 using UnityEditor;
 using UnityEngine;
 
-namespace Innoactive.CreatorEditor.UX
+namespace VPG.CreatorEditor.UX
 {
     /// <summary>
     /// Editor drawer for <see cref="StandaloneMenuHandler"/>.

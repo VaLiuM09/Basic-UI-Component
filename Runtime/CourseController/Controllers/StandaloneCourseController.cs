@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Innoactive.Creator.Core.Internationalization;
+using VPG.Creator.Core.Internationalization;
 using UnityEngine;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Course controller for standalone devices like the Oculus Quest.

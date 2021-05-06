@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Spawns a course menu in the scene.

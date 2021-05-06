@@ -1,8 +1,8 @@
-﻿using Innoactive.Creator.Unity;
-using Innoactive.Creator.UX;
+﻿using VPG.Creator.Unity;
+using VPG.Creator.UX;
 using UnityEngine;
 
-namespace Innoactive.CreatorEditor.UX
+namespace VPG.CreatorEditor.UX
 {
     /// <summary>
     /// Will be called on OnSceneSetup to add the course controller menu.

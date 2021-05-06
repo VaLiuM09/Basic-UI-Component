@@ -1,8 +1,8 @@
 ﻿using System;
-using Innoactive.Creator.Core.Configuration;
+using VPG.Creator.Core.Configuration;
 using UnityEngine;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Spectator camera which sets its viewpoint to the one of the trainee.
