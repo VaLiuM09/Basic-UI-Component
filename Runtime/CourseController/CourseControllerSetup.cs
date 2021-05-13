@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Innoactive.Creator.Core.Utils;
+using VPG.Creator.Core.Utils;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Manages the setup of the course controller and lets the developer choose the <see cref="ICourseController"/>.

@@ -1,8 +1,8 @@
-﻿using Innoactive.Creator.UX;
+﻿using VPG.Creator.UX;
 using UnityEditor;
 using UnityEngine;
 
-namespace Innoactive.CreatorEditor.UX
+namespace VPG.CreatorEditor.UX
 {
     /// <summary>
     /// Custom editor for <see cref="ICourseController"/>s.

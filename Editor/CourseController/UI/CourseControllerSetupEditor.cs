@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Utils;
-using Innoactive.Creator.UX;
+using VPG.Creator.Core;
+using VPG.Creator.Core.Utils;
+using VPG.Creator.UX;
 using UnityEditor;
 using UnityEngine;
 
-namespace Innoactive.CreatorEditor.UX
+namespace VPG.CreatorEditor.UX
 {
     /// <summary>
     /// Custom editor for <see cref="ICourseController"/>s.

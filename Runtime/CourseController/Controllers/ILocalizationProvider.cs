@@ -1,6 +1,6 @@
-﻿using Innoactive.Creator.Core.Internationalization;
+﻿using VPG.Creator.Core.Internationalization;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Interface which provides a <see cref="LocalizationConfig"/>.

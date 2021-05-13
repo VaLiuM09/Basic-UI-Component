@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Internationalization;
+using VPG.Creator.Core;
+using VPG.Creator.Core.Internationalization;
 using UnityEngine;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Base class for the course controller menu.

@@ -1,9 +1,9 @@
 ﻿using System;
-using Innoactive.Creator.Core;
-using Innoactive.Creator.Core.Configuration;
+using VPG.Creator.Core;
+using VPG.Creator.Core.Configuration;
 using UnityEngine;
 
-namespace Innoactive.Creator.UX
+namespace VPG.Creator.UX
 {
     /// <summary>
     /// Initializes the <see cref="CourseRunner"/> with the current selected course on scene start.
