@@ -1,8 +1,8 @@
 ﻿using System;
-using VPG.Creator.Core.Configuration;
+using VPG.Core.Configuration;
 using UnityEngine;
 
-namespace VPG.Creator.UX
+namespace VPG.UX
 {
     /// <summary>
     /// Spectator camera which sets its viewpoint to the one of the trainee.

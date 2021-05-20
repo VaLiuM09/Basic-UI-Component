@@ -7,15 +7,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using VPG.Creator.Core;
-using VPG.Creator.Unity;
-using VPG.Creator.Core.IO;
-using VPG.Creator.TextToSpeech;
-using VPG.Creator.Core.Configuration;
-using VPG.Creator.Core.Configuration.Modes;
-using VPG.Creator.Core.Internationalization;
+using VPG.Core;
+using VPG.Unity;
+using VPG.Core.IO;
+using VPG.TextToSpeech;
+using VPG.Core.Configuration;
+using VPG.Core.Configuration.Modes;
+using VPG.Core.Internationalization;
 
-namespace VPG.Creator.UX
+namespace VPG.UX
 {
     /// <summary>
     /// Standalone controller class for an example of a custom training overlay with audio and localization.

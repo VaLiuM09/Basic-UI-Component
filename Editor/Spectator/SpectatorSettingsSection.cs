@@ -1,9 +1,9 @@
 ﻿using System;
-using VPG.CreatorEditor.Input;
+using VPG.Editor.Input;
 using UnityEditor;
 using UnityEngine;
 
-namespace VPG.CreatorEditor.UI
+namespace VPG.Editor.UI
 {
     internal class SpectatorSettingsSection : IProjectSettingsSection
     {

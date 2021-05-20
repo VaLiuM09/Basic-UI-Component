@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace VPG.CreatorEditor.UI
+namespace VPG.Editor.UI
 {
     public class SpectatorSettingsProvider : BaseSettingsProvider
     {

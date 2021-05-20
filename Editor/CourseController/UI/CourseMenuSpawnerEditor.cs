@@ -1,15 +1,15 @@
-﻿using VPG.Creator.UX;
+﻿using VPG.UX;
 using UnityEditor;
 using UnityEngine;
 
-namespace VPG.CreatorEditor.UX
+namespace VPG.Editor.UX
 {
     /// <summary>
     /// Custom editor for <see cref="ICourseController"/>s.
     /// Takes care of adding required components.
     /// </summary>
     [CustomEditor(typeof(CourseMenuSpawner))]
-    public class CourseMenuSpawnerEditor : Editor
+    public class CourseMenuSpawnerEditor : UnityEditor.Editor
     {
         private SerializedProperty useCustomPrefabProperty;
         private SerializedProperty customPrefabProperty;

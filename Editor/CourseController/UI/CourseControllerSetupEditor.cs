@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using VPG.Creator.Core;
-using VPG.Creator.Core.Utils;
-using VPG.Creator.UX;
+using VPG.Core;
+using VPG.Core.Utils;
+using VPG.UX;
 using UnityEditor;
 using UnityEngine;
 
-namespace VPG.CreatorEditor.UX
+namespace VPG.Editor.UX
 {
     /// <summary>
     /// Custom editor for <see cref="ICourseController"/>s.
     /// Takes care of adding required components.
     /// </summary>
     [CustomEditor(typeof(CourseControllerSetup))]
-    internal class CourseControllerSetupEditor : Editor
+    internal class CourseControllerSetupEditor : UnityEditor.Editor
     {
         private SerializedProperty courseControllerProperty;
         private SerializedProperty useCustomPrefabProperty;

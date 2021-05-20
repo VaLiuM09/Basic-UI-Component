@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using VPG.Creator.UX;
+using VPG.UX;
 using UnityEditor;
 using UnityEngine;
 
-namespace VPG.CreatorEditor.UX
+namespace VPG.Editor.UX
 {
     /// <summary>
     /// Editor drawer for <see cref="StandaloneMenuHandler"/>.
     /// </summary>
     [CustomEditor(typeof(StandaloneMenuHandler))]
-    internal class StandaloneMenuHandlerEditor : Editor
+    internal class StandaloneMenuHandlerEditor : UnityEditor.Editor
     {
         private enum Button
         {
