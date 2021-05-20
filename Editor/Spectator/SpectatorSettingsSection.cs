@@ -14,7 +14,7 @@ namespace VPG.Editor.UI
         public void OnGUI(string searchContext)
         {
             EditorGUILayout.Space();
-            GUIStyle labelStyle = CreatorEditorStyles.ApplyPadding(CreatorEditorStyles.Paragraph, 0);
+            GUIStyle labelStyle = VPGEditorStyles.ApplyPadding(VPGEditorStyles.Paragraph, 0);
             GUILayout.Label("These settings help you to configure the spectator for non-VR users.", labelStyle);
             EditorGUILayout.Space();
 
