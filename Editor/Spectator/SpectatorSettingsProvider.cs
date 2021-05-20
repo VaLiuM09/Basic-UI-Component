@@ -4,7 +4,7 @@ namespace VPG.Editor.UI
 {
     public class SpectatorSettingsProvider : BaseSettingsProvider
     {
-        const string Path = "Project/Creator/Spectator";
+        const string Path = "Project/VR Process Gizmo/Spectator";
 
         public SpectatorSettingsProvider() : base(Path, SettingsScope.Project)
         {
