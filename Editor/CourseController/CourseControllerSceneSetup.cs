@@ -1,8 +1,8 @@
-﻿using VPG.Creator.Unity;
-using VPG.Creator.UX;
+﻿using VPG.Unity;
+using VPG.UX;
 using UnityEngine;
 
-namespace VPG.CreatorEditor.UX
+namespace VPG.Editor.UX
 {
     /// <summary>
     /// Will be called on OnSceneSetup to add the course controller menu.

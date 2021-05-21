@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using VPG.Creator.Core;
-using VPG.Creator.Core.Internationalization;
+using VPG.Core;
+using VPG.Core.Internationalization;
 using UnityEngine;
 
-namespace VPG.Creator.UX
+namespace VPG.UX
 {
     /// <summary>
     /// Base class for the course controller menu.

@@ -1,6 +1,6 @@
-﻿using VPG.Creator.Core.Internationalization;
+﻿using VPG.Core.Internationalization;
 
-namespace VPG.Creator.UX
+namespace VPG.UX
 {
     /// <summary>
     /// Interface which provides a <see cref="LocalizationConfig"/>.

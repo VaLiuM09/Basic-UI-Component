@@ -1,7 +1,7 @@
 ﻿using System;
-using VPG.Creator.Core.Input;
+using VPG.Core.Input;
 
-namespace VPG.Creator.UX
+namespace VPG.UX
 {
     /// <summary>
     /// Controller for a spectator to toggle UI visibility.

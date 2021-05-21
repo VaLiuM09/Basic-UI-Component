@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using VPG.Creator.Core.Input;
+using VPG.Core.Input;
 using UnityEngine;
 
-namespace VPG.Creator.UX
+namespace VPG.UX
 {
     /// <summary>
     /// Base course controller which also takes care that a course menu is spawned.
